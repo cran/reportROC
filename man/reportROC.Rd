@@ -20,14 +20,21 @@ reportROC(gold,predictor,important,plot)
 }
 \value{
   \item{Curoff}{cutoff}
-  \item{SEN}{sensitivity}
-  \item{SPE}{specificity}
   \item{AUC}{Area Under Curve, AUC}
   \item{AUC.SE}{the standard error of AUC}
+  \item{AUC.low,AUC.up}{the 95 percent CI of AUC}
+  \item{SEN}{sensitivity}
+  \item{SEN.low,SEN.up}{the 95 percent CI of sensitivity}
+  \item{SPE}{specificity}
+  \item{SPE.low,SPE.up}{the 95 percent CI of specificity}
   \item{PLR}{positive likelihood ratio}
+  \item{PLR.low,PLR.up}{the 95 percent CI of PLR}
   \item{NLR}{negative likelihood ratio}
+  \item{NLR.low,NLR.up}{the 95 percent CI of NLR}
   \item{PPV}{positive predictive value}
+  \item{PPV.low,PPV.up}{the 95 percent CI of PPV}
   \item{NPV}{negative predictive value}
+  \item{NPV.low,NPV.up}{the 95 percent CI of NPV}
 }
 \author{
 Zhicheng Du<dgdzc@hotmail.com>, Yuantao Hao<haoyt@mail.sysu.edu.cn>
@@ -36,6 +43,8 @@ Zhicheng Du<dgdzc@hotmail.com>, Yuantao Hao<haoyt@mail.sysu.edu.cn>
 Please feel free to contact us, if you have any advice and find any bug!
 
 Update description:
+
+version 2.0: 1. 95 percent CIs for AUC, SEN, SPE, PLR, NLR, PPV and NPV are available.
 
 more functions will be included in 'reportROC' package!
 }

@@ -1,7 +1,7 @@
 Package: reportROC
 Type: Package
 Title: An Easy Way to Report ROC Analysis
-Version: 1.0
+Version: 2.0
 Author: Zhicheng Du, Yuantao Hao
 Maintainer: Zhicheng Du<dgdzc@hotmail.com>
 Description: Provides an easy way to report the results of ROC analysis, including:
@@ -14,6 +14,6 @@ Depends: R (>= 3.3.3)
 Imports: pROC
 LazyData: TRUE
 NeedsCompilation: no
-Packaged: 2017-04-17 15:07:44 UTC; dgdzc
+Packaged: 2017-10-12 13:12:05 UTC; dgdzc
 Repository: CRAN
-Date/Publication: 2017-04-17 17:38:13 UTC
+Date/Publication: 2017-10-12 13:29:31 UTC
