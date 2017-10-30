@@ -10,13 +10,15 @@ Provides an easy way to report the results of ROC analysis, including:
 }
 \keyword{ROC analysis}
 \usage{
-reportROC(gold,predictor,important,plot)
+reportROC(gold,predictor,predictor.binary,important,plot,positive)
 }
 \arguments{
-  \item{gold}{0/1 or binomial factor, the 'gold standard'}
+  \item{gold}{numeric(0/1) or binary, the 'gold standard'; typically encoded with 0 (controls) and 1 (cases)}
   \item{predictor}{numeric, the predictor variable}
+  \item{predictor.binary}{numeric(0/1) or binary, if this argument was used, other arguments including 'predictor', 'important', and 'plot' would be disabled}
   \item{important}{'se' or 'sp', some Youden index maybe the same, and 'important' is to indicate which is more important between sensitivity and specificity}
   \item{plot}{logic, whether to plot the ROC curve with specific style}
+  \item{positive}{logic, 'l': the larger predictor or predictor.binary indicates the positive, 's': the smaller one indicates the positive}
 }
 \value{
   \item{Curoff}{cutoff}
@@ -46,6 +48,8 @@ Update description:
 
 version 2.0: 1. 95 percent CIs for AUC, SEN, SPE, PLR, NLR, PPV and NPV are available.
 
+version 3.0: 1. binary predictor is available with the new argument 'predictor.binary'. 2. positive indicator is available with the new argument 'positive'.
+
 more functions will be included in 'reportROC' package!
 }
 \seealso{
@@ -54,5 +58,9 @@ nothing
 \examples{
 data(aSAH)
 reportROC(gold=aSAH$outcome,predictor=aSAH$s100b,important="se",plot=TRUE)
+
+binary=rep(0,nrow(aSAH))
+binary[aSAH$s100b>=0.205]=1
+reportROC(gold=aSAH$outcome,predictor.binary=binary)
 }
 
