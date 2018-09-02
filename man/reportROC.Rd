@@ -55,6 +55,8 @@ version 3.0: 1. binary predictor is available with the new argument 'predictor.b
 
 version 3.1: 1. accuracy is available. 2. roc curve is available for binary predictor.
 
+version 3.2: 1. data with missing values can be handled.
+
 more functions will be included in 'reportROC' package!
 }
 \seealso{

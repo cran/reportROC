@@ -4,6 +4,31 @@ reportROC=function(gold,
                    important="se",
                    plot=TRUE,positive='l'){
 
+  if(is.null(predictor.binary)){
+    data=data.frame(gold,predictor)
+    nrow1=nrow(data)
+    data=na.omit(data)
+    nrow2=nrow(data)
+    if(nrow1!=nrow2){
+      message(paste(nrow1-nrow2,"sample(s) with missing data was removed!"))
+    }
+    gold=data$gold
+    predictor=data$predictor
+  }
+
+  if(is.null(predictor)){
+    data=data.frame(gold,predictor.binary)
+    nrow1=nrow(data)
+    data=na.omit(data)
+    nrow2=nrow(data)
+    if(nrow1!=nrow2){
+      message(paste(nrow1-nrow2,"sample(s) with missing data was removed!"))
+    }
+    gold=data$gold
+    predictor.binary=data$predictor.binary
+  }
+
+
   if(length(unique(gold))==2){
     error=FALSE
     table.gold=2-as.numeric(as.factor(gold))#'0' is case
