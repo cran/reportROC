@@ -57,6 +57,8 @@ version 3.1: 1. accuracy is available. 2. roc curve is available for binary pred
 
 version 3.2: 1. data with missing values can be handled.
 
+version 3.3: 1. fixed the bug of the same value in 'AUC' and 'AUC.low'.
+
 more functions will be included in 'reportROC' package!
 }
 \seealso{

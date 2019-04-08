@@ -4,6 +4,8 @@ reportROC=function(gold,
                    important="se",
                    plot=TRUE,positive='l'){
 
+  ### if the predictor is continuous
+
   if(is.null(predictor.binary)){
     data=data.frame(gold,predictor)
     nrow1=nrow(data)
@@ -69,7 +71,7 @@ reportROC=function(gold,
 
         AUC=roc.rst$auc
         AUC.SE=(roc.rst$ci[3]-roc.rst$ci[2])/1.96
-        AUC.low=roc.rst$ci[2]
+        AUC.low=roc.rst$ci[1]
         AUC.up=roc.rst$ci[3]
 
         predictor.binary=rep(0,length(roc.rst$predictor))
@@ -125,6 +127,8 @@ reportROC=function(gold,
           NLR,NLR.low,NLR.up,
           PPV,PPV.low,PPV.up,
           NPV,NPV.low,NPV.up),3)
+        rst[1,]=sprintf("%.3f",rst[1,])
+        row.names(rst)=c("")
 
         if(plot){
           par(mai=c(1,1,0.3,0.3))
@@ -137,6 +141,8 @@ reportROC=function(gold,
         return(rst)
       }
     }
+
+    ### if the predictor is binomial
 
     if(is.null(predictor) & !is.null(predictor.binary)){
 
@@ -205,6 +211,8 @@ reportROC=function(gold,
           NLR,NLR.low,NLR.up,
           PPV,PPV.low,PPV.up,
           NPV,NPV.low,NPV.up),3)
+        rst[1,]=sprintf("%.3f",rst[1,])
+        row.names(rst)=c("")
 
         if(plot){
           par(mai=c(1,1,0.3,0.3))
