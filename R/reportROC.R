@@ -2,7 +2,7 @@ reportROC=function(gold,
                    predictor=NULL,
                    predictor.binary=NULL,
                    important="se",
-                   plot=TRUE,positive='l'){
+                   plot=TRUE,xlab="1-Specificity",ylab="Sensitivity",positive='l'){
 
   ### if the predictor is continuous
 
@@ -132,8 +132,8 @@ reportROC=function(gold,
 
         if(plot){
           par(mai=c(1,1,0.3,0.3))
-          plot(1-specificities,sensitivities,col="black",xlab="1-Specificity",
-               ylab="Sensetivity",type='l',lwd=1,lty=1,cex.lab=1,cex.axis=1)
+          plot(1-specificities,sensitivities,col="black",xlab=xlab,
+               ylab=ylab,type='l',lwd=1,lty=1,cex.lab=1,cex.axis=1)
           points(1-sp,se,col="grey",cex=1,pch=16)
           text(1-sp,se,pos=4,paste("(",round(1-sp,2),", ",round(se,2),")",sep=""))
           legend("bottomright",paste("AUC =",round(AUC,2)),col=1,bty="n",cex=1)
@@ -216,8 +216,8 @@ reportROC=function(gold,
 
         if(plot){
           par(mai=c(1,1,0.3,0.3))
-          plot(c(0,1-sp,1),c(0,se,1),col="black",xlab="1-Specificity",
-               ylab="Sensetivity",type='l',lwd=1,lty=1,cex.lab=1,cex.axis=1)
+          plot(c(0,1-sp,1),c(0,se,1),col="black",xlab=xlab,
+               ylab=ylab,type='l',lwd=1,lty=1,cex.lab=1,cex.axis=1)
           points(1-sp,se,col="grey",cex=1,pch=16)
           text(1-sp,se,pos=4,paste("(",round(1-sp,2),", ",round(se,2),")",sep=""))
           legend("bottomright",paste("AUC =",round(AUC,2)),col=1,bty="n",cex=1)

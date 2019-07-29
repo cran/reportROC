@@ -11,7 +11,7 @@ Provides an easy way to report the results of ROC analysis, including:
 }
 \keyword{ROC analysis}
 \usage{
-reportROC(gold,predictor,predictor.binary,important,plot,positive)
+reportROC(gold,predictor,predictor.binary,important,plot,xlab,ylab,positive)
 }
 \arguments{
   \item{gold}{numeric(0/1) or binary, the 'gold standard'; typically encoded with 0 (controls) and 1 (cases)}
@@ -19,6 +19,8 @@ reportROC(gold,predictor,predictor.binary,important,plot,positive)
   \item{predictor.binary}{numeric(0/1) or binary, if this argument was used, other arguments including 'predictor' and 'important' would be disabled}
   \item{important}{'se' or 'sp', some Youden index maybe the same, and 'important' is to indicate which is more important between sensitivity and specificity}
   \item{plot}{logic, whether to plot the ROC curve with specific style}
+  \item{xlab}{character, the name of X axis}
+  \item{ylab}{character, the name of Y axis}
   \item{positive}{logic, 'l': the larger predictor or predictor.binary indicates the 'cases', 's': the smaller one indicates the 'cases'}
 }
 \value{
@@ -58,6 +60,8 @@ version 3.1: 1. accuracy is available. 2. roc curve is available for binary pred
 version 3.2: 1. data with missing values can be handled.
 
 version 3.3: 1. fixed the bug of the same value in 'AUC' and 'AUC.low'.
+
+version 3.4: 1. fixed the axis names of the ROC plot. Thank Cesar S. Rabak (csrabak@hotmial.com) for the useful comments.
 
 more functions will be included in 'reportROC' package!
 }
