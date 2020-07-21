@@ -73,6 +73,16 @@ reportROC=function(gold,
         AUC.SE=(roc.rst$ci[3]-roc.rst$ci[2])/1.96
         AUC.low=roc.rst$ci[1]
         AUC.up=roc.rst$ci[3]
+        wilc.t=wilcox.test(predictor[table.gold == 1], predictor[table.gold == 0], alternative = "great")
+        P=wilc.t$p.value
+        if(AUC.low>0.5 & P>=0.05){
+          wilc.t=wilcox.test(predictor[table.gold == 1], predictor[table.gold == 0], alternative = "less")
+          P=wilc.t$p.value
+        }
+        if(AUC.low<=0.5 & P<0.05){
+          wilc.t=wilcox.test(predictor[table.gold == 1], predictor[table.gold == 0], alternative = "less")
+          P=wilc.t$p.value
+        }
 
         predictor.binary=rep(0,length(roc.rst$predictor))
         predictor.binary[roc.rst$predictor>=cut]=1
@@ -119,7 +129,7 @@ reportROC=function(gold,
 
         rst=round(data.frame(
           Cutoff=cut,
-          AUC,AUC.SE,AUC.low,AUC.up,
+          AUC,AUC.SE,AUC.low,AUC.up,P,
           ACC=acc,ACC.low=acc.low,ACC.up=acc.up,
           SEN=se,SEN.low=se.low,SEN.up=se.up,
           SPE=sp,SPE.low=sp.low,SPE.up=sp.up,
@@ -201,9 +211,22 @@ reportROC=function(gold,
         AUC.up=se.up*(1-sp.up)/2+(se.up+1)*sp.up/2
         AUC.SE=(AUC.up-AUC.low)/(2*1.96)
         AUC.up=ifelse(AUC.up>1,1,AUC.up)
+        wilc.t=wilcox.test(as.numeric(predictor.binary[table.gold == 1]),
+                           as.numeric(predictor.binary[table.gold == 0]), alternative = "great")
+        P=wilc.t$p.value
+        if(AUC.low>0.5 & P>=0.05){
+          wilc.t=wilcox.test(as.numeric(predictor.binary[table.gold == 1]),
+                             as.numeric(predictor.binary[table.gold == 0]), alternative = "less")
+          P=wilc.t$p.value
+        }
+        if(AUC.low<=0.5 & P<0.05){
+          wilc.t=wilcox.test(as.numeric(predictor.binary[table.gold == 1]),
+                             as.numeric(predictor.binary[table.gold == 0]), alternative = "less")
+          P=wilc.t$p.value
+        }
 
         rst=round(data.frame(
-          AUC,AUC.SE,AUC.low,AUC.up,
+          AUC,AUC.SE,AUC.low,AUC.up,P,
           ACC=acc,ACC.low=acc.low,ACC.up=acc.up,
           SEN=se,SEN.low=se.low,SEN.up=se.up,
           SPE=sp,SPE.low=sp.low,SPE.up=sp.up,

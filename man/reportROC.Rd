@@ -28,6 +28,7 @@ reportROC(gold,predictor,predictor.binary,important,plot,xlab,ylab,positive)
   \item{AUC}{Area Under Curve, AUC}
   \item{AUC.SE}{the standard error of AUC}
   \item{AUC.low,AUC.up}{the 95 percent CI of AUC}
+  \item{P}{the p value for AUC using one-sided test, which is different from SPSS using two-sided test}
   \item{ACC}{accuracy}
   \item{ACC.low,ACC.up}{the 95 percent CT of accuracy}
   \item{SEN}{sensitivity}
@@ -62,6 +63,8 @@ version 3.2: 1. data with missing values can be handled.
 version 3.3: 1. fixed the bug of the same value in 'AUC' and 'AUC.low'.
 
 version 3.4: 1. fixed the axis names of the ROC plot. Thank Cesar S. Rabak (csrabak@hotmial.com) for the useful comments.
+
+version 3.5: 1. add p value to the outputs.
 
 more functions will be included in 'reportROC' package!
 }

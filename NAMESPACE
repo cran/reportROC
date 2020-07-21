@@ -1,4 +1,4 @@
 exportPattern("^[[:alpha:]]+")
 importFrom("pROC", "roc")
 importFrom("graphics", "legend", "par", "points", "text")
-importFrom("stats", "na.omit")
+importFrom("stats", "na.omit","wilcox.test")
