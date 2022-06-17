@@ -2,7 +2,9 @@ reportROC=function(gold,
                    predictor=NULL,
                    predictor.binary=NULL,
                    important="se",
-                   plot=TRUE,xlab="1-Specificity",ylab="Sensitivity",positive='l'){
+                   positive="l",
+                   exact=NULL,
+                   plot=TRUE,xlab="1-Specificity",ylab="Sensitivity"){
 
   ### if the predictor is continuous
 
@@ -30,27 +32,22 @@ reportROC=function(gold,
     predictor.binary=data$predictor.binary
   }
 
-
   if(length(unique(gold))==2){
     error=FALSE
-    table.gold=2-as.numeric(as.factor(gold))#'0' is case
+    table.gold=2-as.numeric(as.factor(gold))#'0' is positive
 
     if(!is.null(predictor) & is.null(predictor.binary)){
 
       if(length(unique(gold))!=2){
         message("Error! The 'gold' variable must be binomial!");error=TRUE
       }
-      if(class(predictor)!="numeric"){
+      if(!("numeric" %in% is(predictor))){
         message("Error! The 'predictor' variable must be numeric!");error=TRUE
       }
 
       if(!error){
-        if(positive=="l"){
-          roc.rst=roc(gold~predictor,auc=TRUE,ci=TRUE,direction = "<")
-        }
-        if(positive=="s"){
-          roc.rst=roc(gold~predictor,auc=TRUE,ci=TRUE,direction = ">")
-        }
+        if(positive=="l"){roc.rst=roc(gold~predictor,auc=TRUE,ci=TRUE,direction = "<")}
+        if(positive=="s"){roc.rst=roc(gold~predictor,auc=TRUE,ci=TRUE,direction = ">")}
         sensitivities=roc.rst$sensitivities
         specificities=roc.rst$specificities
         cutpoints=roc.rst$thresholds
@@ -73,14 +70,14 @@ reportROC=function(gold,
         AUC.SE=(roc.rst$ci[3]-roc.rst$ci[2])/1.96
         AUC.low=roc.rst$ci[1]
         AUC.up=roc.rst$ci[3]
-        wilc.t=wilcox.test(predictor[table.gold == 1], predictor[table.gold == 0], alternative = "great")
+        wilc.t=wilcox.test(predictor[table.gold == 1], predictor[table.gold == 0], alternative = "great", exact=exact)
         P=wilc.t$p.value
         if(AUC.low>0.5 & P>=0.05){
-          wilc.t=wilcox.test(predictor[table.gold == 1], predictor[table.gold == 0], alternative = "less")
+          wilc.t=wilcox.test(predictor[table.gold == 1], predictor[table.gold == 0], alternative = "less", exact=exact)
           P=wilc.t$p.value
         }
         if(AUC.low<=0.5 & P<0.05){
-          wilc.t=wilcox.test(predictor[table.gold == 1], predictor[table.gold == 0], alternative = "less")
+          wilc.t=wilcox.test(predictor[table.gold == 1], predictor[table.gold == 0], alternative = "less", exact=exact)
           P=wilc.t$p.value
         }
 
@@ -88,18 +85,14 @@ reportROC=function(gold,
         predictor.binary[roc.rst$predictor>=cut]=1
         predictor.binary=as.factor(predictor.binary)
         levels(predictor.binary)=c("0","1")
-        if(positive=='l'){
-          predictor.binary=factor(predictor.binary,levels=c(1,0))
-        }
-        if(positive=='s'){
-          predictor.binary=factor(predictor.binary,levels=c(0,1))
-        }
-        pre=table(predictor.binary,table.gold)
-        pre=as.vector(pre)
-        tp=pre[1]
-        fp=pre[3]
-        fn=pre[2]
-        tn=pre[4]
+        if(positive=='l'){predictor.binary=factor(predictor.binary,levels=c(1,0))}
+        if(positive=='s'){predictor.binary=factor(predictor.binary,levels=c(0,1))}
+        pre.tbl=table(predictor.binary,table.gold)
+        pre=as.vector(pre.tbl)
+        a=tp=pre[1]#a
+        b=fp=pre[3]#b
+        c=fn=pre[2]#c
+        d=tn=pre[4]#d
 
         acc=(tp+tn)/sum(pre)
         acc.low=acc-1.96*(acc*(1-acc)/sum(pre))
@@ -119,13 +112,35 @@ reportROC=function(gold,
         NLR.low=NLR*exp(-1.96*sqrt(se/fn+(1-sp)/tn))
         NLR.up=NLR*exp(1.96*sqrt(se/fn+(1-sp)/tn))
 
-        PPV=pre[1]/(pre[1]+pre[3])
+        PPV=tp/(tp+fp)
         PPV.low=PPV-1.96*sqrt(PPV*(1-PPV)/(tp+fp))
         PPV.up=PPV+1.96*sqrt(PPV*(1-PPV)/(tp+fp))
 
-        NPV=pre[4]/(pre[4]+pre[2])
+        NPV=tn/(fn+tn)
         NPV.low=NPV-1.96*sqrt(NPV*(1-NPV)/(tn+fn))
         NPV.up=NPV+1.96*sqrt(NPV*(1-NPV)/(tn+fn))
+
+        PPA=a/(a+c)
+        PPA.low=PPA-1.96*sqrt(PPA*(1-PPA)/(a+c))
+        PPA.up=PPA+1.96*sqrt(PPA*(1-PPA)/(a+c))
+
+        NPA=d/(b+d)
+        NPA.low=NPA-1.96*sqrt(NPA*(1-NPA)/(b+d))
+        NPA.up=NPA+1.96*sqrt(NPA*(1-NPA)/(b+d))
+
+        TPA=(a+d)/sum(pre)
+        TPA.low=TPA-1.96*sqrt(TPA*(1-TPA)/sum(pre))
+        TPA.up=TPA+1.96*sqrt(TPA*(1-TPA)/sum(pre))
+
+        KAPPA.rst=Kappa(pre.tbl)
+        KAPPA=KAPPA.rst$Unweighted["value"]
+        KAPPA.low=confint(KAPPA.rst)[1,1]
+        KAPPA.up=confint(KAPPA.rst)[1,2]
+
+        if(AUC.up>1){AUC.up=1}
+        if(acc.up>1){acc.up=1}
+        if(se.up>1){se.up=1}
+        if(sp.up>1){sp.up=1}
 
         rst=round(data.frame(
           Cutoff=cut,
@@ -136,7 +151,11 @@ reportROC=function(gold,
           PLR,PLR.low,PLR.up,
           NLR,NLR.low,NLR.up,
           PPV,PPV.low,PPV.up,
-          NPV,NPV.low,NPV.up),3)
+          NPV,NPV.low,NPV.up,
+          PPA,PPA.low,PPA.up,
+          NPA,NPA.low,NPA.up,
+          TPA,TPA.low,TPA.up,
+          KAPPA,KAPPA.low,KAPPA.up),3)
         rst[1,]=sprintf("%.3f",rst[1,])
         row.names(rst)=c("")
 
@@ -146,7 +165,8 @@ reportROC=function(gold,
                ylab=ylab,type='l',lwd=1,lty=1,cex.lab=1,cex.axis=1)
           points(1-sp,se,col="grey",cex=1,pch=16)
           text(1-sp,se,pos=4,paste("(",round(1-sp,2),", ",round(se,2),")",sep=""))
-          legend("bottomright",paste("AUC =",round(AUC,2)),col=1,bty="n",cex=1)
+          legend("bottomright",paste0("AUC = ",sprintf("%.2f",AUC),"(",sprintf("%.2f",AUC.low),"-",sprintf("%.2f",AUC.up),")"),col=1,bty="n",cex=1)
+          lines(c(0,1),c(0,1),lty=2)
         }
         return(rst)
       }
@@ -170,12 +190,12 @@ reportROC=function(gold,
         if(positive=='s'){
           predictor.binary=factor(predictor.binary,levels=c(0,1))
         }
-        pre=table(predictor.binary,table.gold)
-        pre=as.vector(pre)
-        tp=pre[1]
-        fp=pre[3]
-        fn=pre[2]
-        tn=pre[4]
+        pre.tbl=table(predictor.binary,table.gold)
+        pre=as.vector(pre.tbl)
+        a=tp=pre[1]
+        b=fp=pre[3]
+        c=fn=pre[2]
+        d=tn=pre[4]
 
         acc=(tp+tn)/sum(pre)
         acc.low=acc-1.96*(acc*(1-acc)/sum(pre))
@@ -198,13 +218,30 @@ reportROC=function(gold,
         NLR.low=NLR*exp(-1.96*sqrt(se/fn+(1-sp)/tn))
         NLR.up=NLR*exp(1.96*sqrt(se/fn+(1-sp)/tn))
 
-        PPV=pre[1]/(pre[1]+pre[3])
+        PPV=tp/(tp+fp)
         PPV.low=PPV-1.96*sqrt(PPV*(1-PPV)/(tp+fp))
         PPV.up=PPV+1.96*sqrt(PPV*(1-PPV)/(tp+fp))
 
-        NPV=pre[4]/(pre[4]+pre[2])
+        NPV=tn/(fn+tn)
         NPV.low=NPV-1.96*sqrt(NPV*(1-NPV)/(tn+fn))
         NPV.up=NPV+1.96*sqrt(NPV*(1-NPV)/(tn+fn))
+
+        PPA=a/(a+c)
+        PPA.low=PPA-1.96*sqrt(PPA*(1-PPA)/(a+c))
+        PPA.up=PPA+1.96*sqrt(PPA*(1-PPA)/(a+c))
+
+        NPA=d/(b+d)
+        NPA.low=NPA-1.96*sqrt(NPA*(1-NPA)/(b+d))
+        NPA.up=NPA+1.96*sqrt(NPA*(1-NPA)/(b+d))
+
+        TPA=(a+d)/sum(pre)
+        TPA.low=TPA-1.96*sqrt(TPA*(1-TPA)/sum(pre))
+        TPA.up=TPA+1.96*sqrt(TPA*(1-TPA)/sum(pre))
+
+        KAPPA.rst=Kappa(pre.tbl)
+        KAPPA=KAPPA.rst$Unweighted["value"]
+        KAPPA.low=confint(KAPPA.rst)[1,1]
+        KAPPA.up=confint(KAPPA.rst)[1,2]
 
         AUC=se*(1-sp)/2+(se+1)*sp/2
         AUC.low=se.low*(1-sp.low)/2+(se.low+1)*sp.low/2
@@ -212,18 +249,23 @@ reportROC=function(gold,
         AUC.SE=(AUC.up-AUC.low)/(2*1.96)
         AUC.up=ifelse(AUC.up>1,1,AUC.up)
         wilc.t=wilcox.test(as.numeric(predictor.binary[table.gold == 1]),
-                           as.numeric(predictor.binary[table.gold == 0]), alternative = "great")
+                           as.numeric(predictor.binary[table.gold == 0]), alternative = "great", exact=exact)
         P=wilc.t$p.value
         if(AUC.low>0.5 & P>=0.05){
           wilc.t=wilcox.test(as.numeric(predictor.binary[table.gold == 1]),
-                             as.numeric(predictor.binary[table.gold == 0]), alternative = "less")
+                             as.numeric(predictor.binary[table.gold == 0]), alternative = "less", exact=exact)
           P=wilc.t$p.value
         }
         if(AUC.low<=0.5 & P<0.05){
           wilc.t=wilcox.test(as.numeric(predictor.binary[table.gold == 1]),
-                             as.numeric(predictor.binary[table.gold == 0]), alternative = "less")
+                             as.numeric(predictor.binary[table.gold == 0]), alternative = "less", exact=exact)
           P=wilc.t$p.value
         }
+
+        if(AUC.up>1){AUC.up=1}
+        if(acc.up>1){acc.up=1}
+        if(se.up>1){se.up=1}
+        if(sp.up>1){sp.up=1}
 
         rst=round(data.frame(
           AUC,AUC.SE,AUC.low,AUC.up,P,
@@ -233,7 +275,11 @@ reportROC=function(gold,
           PLR,PLR.low,PLR.up,
           NLR,NLR.low,NLR.up,
           PPV,PPV.low,PPV.up,
-          NPV,NPV.low,NPV.up),3)
+          NPV,NPV.low,NPV.up,
+          PPA,PPA.low,PPA.up,
+          NPA,NPA.low,NPA.up,
+          TPA,TPA.low,TPA.up,
+          KAPPA,KAPPA.low,KAPPA.up),3)
         rst[1,]=sprintf("%.3f",rst[1,])
         row.names(rst)=c("")
 
@@ -243,7 +289,8 @@ reportROC=function(gold,
                ylab=ylab,type='l',lwd=1,lty=1,cex.lab=1,cex.axis=1)
           points(1-sp,se,col="grey",cex=1,pch=16)
           text(1-sp,se,pos=4,paste("(",round(1-sp,2),", ",round(se,2),")",sep=""))
-          legend("bottomright",paste("AUC =",round(AUC,2)),col=1,bty="n",cex=1)
+          legend("bottomright",paste0("AUC = ",sprintf("%.2f",AUC),"(",sprintf("%.2f",AUC.low),"-",sprintf("%.2f",AUC.up),")"),col=1,bty="n",cex=1)
+          lines(c(0,1),c(0,1),lty=2)
         }
 
         return(rst)

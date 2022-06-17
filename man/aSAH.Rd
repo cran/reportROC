@@ -17,17 +17,16 @@
   Natacha Turck, Laszlo Vutskits, Paola Sanchez-Pena, Xavier
   Robin, Alexandre Hainard, Marianne Gex-Fabry, Catherine Fouda, Hadiji
   Bassem, Markus Mueller, Frédérique Lisacek, Louis Puybasset and
-  Jean-Charles Sanchez (2010) ``A multiparameter panel method for outcome
-  prediction following aneurysmal subarachnoid hemorrhage''.
-  \emph{Intensive Care Medicine} \bold{36}(1), 107--115. DOI:
-  \href{http://dx.doi.org/10.1007/s00134-009-1641-y}{10.1007/s00134-009-1641-y}.
+  Jean-Charles Sanchez (2010). A multiparameter panel method for outcome
+  prediction following aneurysmal subarachnoid hemorrhage.
+  Intensive Care Medicine. 36:(1), 107-115. \doi{10.1007/s00134-009-1641-y}
 }
 
 \references{
-  Xavier Robin, Natacha Turck, Alexandre Hainard, \emph{et al.}
-  (2011) ``pROC: an open-source package for R and S+ to analyze and
-  compare ROC curves''. \emph{BMC Bioinformatics}, \bold{7}, 77.
-  DOI: \href{http://dx.doi.org/10.1186/1471-2105-12-77}{10.1186/1471-2105-12-77}
+  Xavier Robin, Natacha Turck, Alexandre Hainard, et al.
+  (2011). pROC: an open-source package for R and S+ to analyze and
+  compare ROC curves. BMC Bioinformatics. 7, 77.
+  \doi{10.1186/1471-2105-12-77}
 }
 
 \examples{
